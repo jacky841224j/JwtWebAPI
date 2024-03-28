@@ -15,14 +15,14 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "JWT Demo",
-        Description = "菜雞嘗試 JWT 的範例 API",
-        TermsOfService = new Uri("https://igouist.github.io/"),
+        Title = "JWT Demo測試",
+        Description = "JWT Demo 驗證專案",
+        TermsOfService = new Uri("https://github.com/jacky841224j"),
         Contact = new OpenApiContact
         {
-            Name = "Igouist",
+            Name = "jacky841224j",
             Email = string.Empty,
-            Url = new Uri("https://igouist.github.io/about/"),
+            Url = new Uri("https://github.com/jacky841224j"),
         }
     });
 
