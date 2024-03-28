@@ -1,3 +1,5 @@
+using JwtWebAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -10,6 +12,33 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+var jwtConfigSection = builder.Configuration.GetSection(nameof(JWTConfig));
+builder.Services.Configure<JWTConfig>(jwtConfigSection);
+var jwtConfig = jwtConfigSection.Get<JWTConfig>();
+
+ArgumentNullException.ThrowIfNull(jwtConfig);
+
+builder.Services.AddAuthentication(option =>
+    {
+        option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+
+            ValidateIssuer = false, //不驗證發行者（Issuer）的身分識別
+            RequireExpirationTime = true, //要求令牌(Token)必須具有過期時間
+            ValidateAudience = false, //不驗證觀眾（Audience）
+            ValidateIssuerSigningKey = false, //不驗證發行者簽名金鑰
+            IssuerSigningKey = jwtConfig.SigningKey
+        };
+    }
+);
+
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -54,19 +83,7 @@ builder.Services.AddSwaggerGen(options =>
 
 });
 
-builder.Services.AddAuthentication().AddJwtBearer("Bearer", options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-        
-                ValidateIssuer = false, //不驗證發行者（Issuer）的身分識別
-                RequireExpirationTime = true, //要求令牌(Token)必須具有過期時間
-                ValidateAudience = false, //不驗證觀眾（Audience）
-                ValidateIssuerSigningKey = false, //不驗證發行者簽名金鑰
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ba8347e6-3504-460d-979e-7a4555c890ee"))
-            };
-        }
-    );
+
 
 
 var app = builder.Build();
